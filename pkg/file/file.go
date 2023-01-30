@@ -50,17 +50,20 @@ func (f *Fs) FindNodeModulesInner(cwd string) {
 	if len(needFurther) == 0 {
 		return
 	}
+
 	maxGoroutines := 3
 	guard := make(chan struct{}, maxGoroutines)
 	var wg sync.WaitGroup
 	for _, v := range needFurther {
 		v := v
-		guard <- struct{}{} // would block if guard channel is already filled
 		wg.Add(1)
 		go func() {
-			defer wg.Done()
+			guard <- struct{}{} // would block if guard channel is already filled
+			defer func() {
+				<-guard
+				wg.Done()
+			}()
 			f.FindNodeModulesInner(v)
-			<-guard
 		}()
 	}
 	wg.Wait()
