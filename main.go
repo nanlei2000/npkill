@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	f := file.New("/Users/bytedance/Project")
+	f := file.New("/Users/xx/Project")
 	f.FindNodeModules()
 }
