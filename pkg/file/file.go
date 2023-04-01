@@ -3,7 +3,6 @@ package file
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -25,21 +24,26 @@ func New(cwd string) *Fs {
 
 // 找到当前目录下所有的 node_modules
 func (f *Fs) FindNodeModulesInner(cwd string, w *tabwriter.Writer) {
+	isHidden, _ := IsHiddenFile(cwd)
+	if isHidden {
+		return
+	}
 	files, err := ioutil.ReadDir(cwd)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	var needFurther []string
 	for _, file := range files {
-		if !file.IsDir() {
+		isHidden, _ := IsHiddenFile(file.Name())
+		if !file.IsDir() || isHidden {
 			continue
 		}
 		absPath := path.Join(cwd, file.Name())
 		if file.Name() == "node_modules" {
 			size, count, err := DirSize(absPath)
 			if err != nil {
-				log.Fatal(err)
+				continue
 			}
 			fmt.Fprintf(w, "%s\t%s\t%d\t\n", absPath, humanize.Bytes(uint64(size)), count)
 			needFurther = []string{}
