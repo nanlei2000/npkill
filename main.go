@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/nanlei2000/npkill/pkg/file"
@@ -22,19 +21,13 @@ func main() {
 				Usage:   "list all node modules folders",
 				Action: func(cCtx *cli.Context) error {
 					p := cCtx.Args().First()
-					cwd, err := os.Getwd()
+
+					absPath, err := filepath.Abs(p)
 					if err != nil {
 						log.Fatal(err)
 					}
-					if len(p) == 0 {
-						p = cwd
-					}
 
-					if !path.IsAbs(p) {
-						p = path.Join(cwd, p)
-					}
-
-					f := file.New(p)
+					f := file.New(absPath)
 					f.FindNodeModules()
 
 					return nil
@@ -46,18 +39,12 @@ func main() {
 				Usage:   "delete node modules folder",
 				Action: func(cCtx *cli.Context) error {
 					p := cCtx.Args().First()
-					cwd, err := os.Getwd()
+
+					absPath, err := filepath.Abs(p)
 					if err != nil {
 						log.Fatal(err)
 					}
-					if len(p) == 0 {
-						p = cwd
-					}
-					if !path.IsAbs(p) {
-						p = path.Join(cwd, p)
-					}
-					p = path.Clean(p)
-					if filepath.Base(p) != "node_modules" {
+					if filepath.Base(absPath) != "node_modules" {
 						return nil
 					}
 
