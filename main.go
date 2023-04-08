@@ -13,11 +13,13 @@ import (
 
 func main() {
 	app := &cli.App{
+		Name:  "npkill",
+		Usage: "delete node modules",
 		Commands: []*cli.Command{
 			{
 				Name:    "list",
 				Aliases: []string{"l"},
-				Usage:   "add a task to the list",
+				Usage:   "list all node modules folders",
 				Action: func(cCtx *cli.Context) error {
 					p := cCtx.Args().First()
 					cwd, err := os.Getwd()
@@ -41,7 +43,7 @@ func main() {
 			{
 				Name:    "del",
 				Aliases: []string{"d"},
-				Usage:   "complete a task on the list",
+				Usage:   "delete node modules folder",
 				Action: func(cCtx *cli.Context) error {
 					p := cCtx.Args().First()
 					cwd, err := os.Getwd()
